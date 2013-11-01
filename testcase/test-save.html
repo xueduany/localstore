@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+	<script src="http://www.a.com/src/require.js"></script>
+	<script>
+		require.config({
+			waitSeconds : 2000,
+			baseUrl : 'http://www.a.com/src/'
+		});
+
+		require([ 'localstore/localstore' ], function(localstore) {
+			setTimeout(function() {
+				localstore.save('asdasdasd', '91823091823091823', function() {
+					alert('save ok');
+					localstore.get('asdasdasd', function(cache) {
+						alert('you saved item is ' + cache);
+					});
+				});
+
+			}, 1000)
+
+		})
+	</script>
+</body>
+</html>
