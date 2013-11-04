@@ -9,7 +9,7 @@ Usage
 -----
 
 For example,
-<code>
+```js
 	require([ 'localstore/localstore' ], function(localstore) {
 			setTimeout(function() {
 				localstore.save('asdasdasd', '91823091823091823', function() {
@@ -22,7 +22,7 @@ For example,
 			}, 1000)
 
 		})
-</code>
+```
 
 First, you need a subDomain list for store context,
 like 
