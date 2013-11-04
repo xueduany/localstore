@@ -14,7 +14,7 @@
 			setTimeout(function() {
 				localstore.save('asdasdasd', '91823091823091823', function() {
 					alert('save ok');
-					localstore.get('asdasdasd', function(cache) {
+					localstore.read('asdasdasd', function(cache) {
 						alert('you saved item is ' + cache);
 					});
 				});

@@ -6,13 +6,13 @@ self.onmessage = function(message) {
 		try {
 			localStorage.setItem(sign.key, sign.value);
 			returnMessage = {
-				cmd : 'result',
+				cmd : sign.cmd,
 				result : 1,
 				id : sign.id
 			}
 		} catch (e) {
 			returnMessage = {
-				cmd : 'result',
+				cmd : sign.cmd,
 				result : 0,
 				data : e,
 				id : sign.id
@@ -23,7 +23,7 @@ self.onmessage = function(message) {
 		try {
 			var cacheItem = localStorage.getItem(sign.key);
 			returnMessage = {
-				cmd : 'result',
+				cmd : sign.cmd,
 				result : 1,
 				data : cacheItem,
 				id : sign.id
@@ -36,7 +36,7 @@ self.onmessage = function(message) {
 		try {
 			localStorage.removeItem(sign.key);
 			returnMessage = {
-				cmd : 'result',
+				cmd : sign.cmd,
 				result : 1,
 				id : sign.id
 			}
