@@ -1,27 +1,76 @@
 <!doctype html>
 <html>
 <head>
+<meta http-equiv=Content-Type content="text/html;charset=utf-8">
+
 </head>
 <body>
-	<script src="http://www.a.com/src/require.js"></script>
+	<style type="text/css">
+#result {
+	width: 1000px;
+	height: 500px;
+}
+</style>
+	<script src="../../localstore/src/require.js"></script>
+	<script src="vkbeautify.js"></script>
+	<h2>
+		测试用保存文本，大小<span id="J_testStrSize"></span>字节
+	</h2>
+	<textarea style="width: 1000px; height: 60px;" id="J_testStr"
+		onblur="document.querySelector('#J_testStrSize').innerHTML = document.querySelector('#J_testStr').value.length">         这玄阴门三字一旦入耳，那中年散修男子身子一震，凶恶气势登时便消散了大半，只是脸上兀自还残留着几分愤怒不甘。要知道如今这世道，修真界里的修士有没有门派出身，门阀弟子与普通散修，那地位真是差距极大。纵然散修看着人数极多，但如此之多的散修中除了极其罕见的一些个奇人异士，绝大部分人都是在修真界里垫底的角色，他们是万万不敢招惹修真界中成名门派的。单以实力论，这些在如今竞争激烈无比的修真界中能够存续至今的修真门派，实力都是不可小觑，更何况在阴州这里名声赫赫的玄阴门，纵然还比不上修真界四正七玄那些个顶尖名门，但对比起这些修真界最底层的散修，那真是巨无霸一般的存在，随便伸个指头也碾死了他们。         这玄阴门三字一旦入耳，那中年散修男子身子一震，凶恶气势登时便消散了大半，只是脸上兀自还残留着几分愤怒不甘。要知道如今这世道，修真界里的修士有没有门派出身，门阀弟子与普通散修，那地位真是差距极大。纵然散修看着人数极多，但如此之多的散修中除了极其罕见的一些个奇人异士，绝大部分人都是在修真界里垫底的角色，他们是万万不敢招惹修真界中成名门派的。单以实力论，这些在如今竞争激烈无比的修真界中能够存续至今的修真门派，实力都是不可小觑，更何况在阴州这里名声赫赫的玄阴门，纵然还比不上修真界四正七玄那些个顶尖名门，但对比起这些修真界最底层的散修，那真是巨无霸一般的存在，随便伸个指头也碾死了他们。         这玄阴门三字一旦入耳，那中年散修男子身子一震，凶恶气势登时便消散了大半，只是脸上兀自还残留着几分愤怒不甘。要知道如今这世道，修真界里的修士有没有门派出身，门阀弟子与普通散修，那地位真是差距极大。纵然散修看着人数极多，但如此之多的散修中除了极其罕见的一些个奇人异士，绝大部分人都是在修真界里垫底的角色，他们是万万不敢招惹修真界中成名门派的。单以实力论，这些在如今竞争激烈无比的修真界中能够存续至今的修真门派，实力都是不可小觑，更何况在阴州这里名声赫赫的玄阴门，纵然还比不上修真界四正七玄那些个顶尖名门，但对比起这些修真界最底层的散修，那真是巨无霸一般的存在，随便伸个指头也碾死了他们。凶恶气势登时便消散了大半，只是脸上兀自还残留着几分愤怒不甘。要知道如今这世道，修真界里的修士有没有门派出身，门阀弟子与普通散修，那地位真是差距极大。纵然散修看着人数极多，但如此之多的散修中除了极其罕见</textarea>
+	<script>
+		document.querySelector('#J_testStrSize').innerHTML = document.querySelector('#J_testStr').value.length
+	</script>
+	<h2>
+		本地缓存保存结果，保存了<span id="J_testSave">0</span>字节数据，耗时<span id="J_hs">0</span>毫秒
+	</h2>
+	<textarea id="result">zxczxc</textarea>
+
+	<br />
+	<div>
+		<button onclick="window.a.clear(function(){location.reload()});">清空缓存并刷新</button>
+	</div>
 	<script>
 		require.config({
-			waitSeconds : 2000,
-			baseUrl : 'http://www.a.com/src/'
-		});
+            waitSeconds : 2000,
+            baseUrl : 'http://statics1.gtimg.com/localstore/src/'
+        });
+        var testStr = '';
+        var t = document.querySelector('#J_testStr').value;
+        var i = 0;
+        while (i < 1000) {
+	        testStr += t;
+	        i++;
+        }
+        require([ 'localstore/localstore' ], function(localstore) {
+	        window.a = localstore;
+	        var a = (+new Date());
+	        t(0);
+	        localstore.enableDebug();
+	        function t(k) {
+		        localstore.save('asdasdasd' + k, testStr, function() {
+			        document.querySelector('#J_testSave').innerHTML = (parseInt(document.querySelector('#J_testSave').innerHTML.replace(/,/g, '')) + testStr.length).toString().replace(/\d+?(?=(?:\d{3})+$)/img, "$&,");
+			        document.querySelector('#result').value = vkbeautify.json(localStorage.getItem('_localstoreConnectors_storeMap_'));
+			        document.querySelector('#J_hs').innerHTML = ((+new Date()) - a);
+			        k++;
+			        if (k == 100) {
 
-		require([ 'localstore/localstore' ], function(localstore) {
-			setTimeout(function() {
-				localstore.save('asdasdasd', '91823091823091823', function() {
-					alert('save ok');
-					localstore.read('asdasdasd', function(cache) {
-						alert('you saved item is ' + cache);
-					});
-				});
+			        } else {
+				        t(k);
+			        }
+			        /**
+			        alert('save ok');
+			        
+			        localstore.read('asdasdasd', function(cache) {
+			            alert('you saved item is ' + cache);
+			        });
+			         **/
+		        });
+	        }
+        });
+        function beautifulJSON(jsonStr) {
 
-			}, 1000)
-
-		})
+        }
 	</script>
 </body>
 </html>

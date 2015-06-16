@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html;charset=utf-8">
+</head>
+<body>
+	<style>
+#J_testImgBase64 {
+	width: 1000px;
+	height: 300px;
+}
+</style>
+	<h2>
+		这个一个远程测试图片<img src="img.jpg">
+	</h2>
+	<h2>这是通过API读取到图片的base64编码</h2>
+	<div>
+		<textarea id="J_testImgBase64"></textarea>
+	</div>
+	<button onclick="savePic" >然后我们把这个编码存入到localStore里面</button>
+	<button onclick="loadPic" >然后我们从localStore里面读取图片并且绘制在页面上</button>
+	<script src="../../localstore/src/require.js"></script>
+	<script>
+		var url = "img.jpg";
+        var xhr = new XMLHttpRequest();
+        var img = document.createElement('img');
+        var imgdata
+        xhr.onreadystatechange = function() {
+	        if (xhr.readyState === 4 && xhr.status === 200) {
+		        imgdata = xhr.response;
+		        console.log(imgdata);
+
+		        var reader = new FileReader();
+		        reader.readAsDataURL(imgdata);
+		        reader.onload = function() {
+			        //img.src = this.result;
+			        document.querySelector('#J_testImgBase64').value = this.result;
+			        //document.body.appendChild(img);
+		        }
+
+	        }
+        }
+        xhr.open("GET", url, true);
+        xhr.responseType = 'blob';
+        //xhr.overrideMimeType("text/plain; charset=x-user-defined");
+        xhr.send(null);
+        
+        function savePic(){
+       		 	
+        }
+	</script>
+</body>
+</html>
