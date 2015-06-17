@@ -141,7 +141,7 @@ define('localstore/localstore', [ 'localstore/connector', 'localstore/config' ],
 		if (localstoreConnectors.currentStore) {
 			localstoreConnectors.currentStore.connector.postMessage(localstoreConnectors.cmdMap[message.id].message, '*')
 		} else {
-			error('Can`t save cache!');
+			error('Can`t save cache!You save too many items...');
 		}
 	}
 	/**
