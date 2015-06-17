@@ -1,2 +1,2 @@
 CACHE MANIFEST
-../src/localstore/proxy.js
+/src/localstore/proxy.js
