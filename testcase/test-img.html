@@ -11,17 +11,18 @@
 }
 </style>
 	<h2>
-		这个一个远程测试图片<img src="img.jpg">
+		这个一个远程测试图片http://statics1.jiaru.club/localstore/testcase/img.jpg<br />
+		<img src="http://statics1.jiaru.club/localstore/testcase/img.jpg">
 	</h2>
 	<h2>这是通过API读取到图片的base64编码</h2>
 	<div>
 		<textarea id="J_testImgBase64"></textarea>
 	</div>
-	<button onclick="savePic" >然后我们把这个编码存入到localStore里面</button>
-	<button onclick="loadPic" >然后我们从localStore里面读取图片并且绘制在页面上</button>
+	<button onclick="savePic()">然后我们把这个编码存入到localStore里面</button>
+	<button onclick="loadPic()">然后我们从localStore里面读取图片并且绘制在页面上</button>
 	<script src="../../localstore/src/require.js"></script>
 	<script>
-		var url = "img.jpg";
+		var url = document.querySelector('img').src;
         var xhr = new XMLHttpRequest();
         var img = document.createElement('img');
         var imgdata
@@ -44,9 +45,30 @@
         xhr.responseType = 'blob';
         //xhr.overrideMimeType("text/plain; charset=x-user-defined");
         xhr.send(null);
-        
-        function savePic(){
-       		 	
+
+        require.config({
+            waitSeconds : 2000,
+            baseUrl : 'http://statics1.gtimg.com/localstore/src/'
+        });
+        function savePic() {
+	        require([ 'localstore/localstore' ], function(localstore) {
+		        localstore.save('testImg', document.querySelector('#J_testImgBase64').value, function() {
+			        alert('save img base64 success!!!');
+		        });
+	        });
+        }
+        function loadPic() {
+	        require([ 'localstore/localstore' ], function(localstore) {
+		        localstore.read('testImg', function(data) {
+			        if (data) {
+				        var img = document.createElement('img');
+				        img.src = data;
+				        document.body.appendChild(img);
+			        } else {
+				        alert('no data!!!')
+			        }
+		        });
+	        })
         }
 	</script>
 </body>

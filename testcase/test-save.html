@@ -30,6 +30,14 @@
 	<div>
 		<button onclick="window.a.clear(function(){location.reload()});">清空缓存并刷新</button>
 	</div>
+	
+	<ul>
+		<li>支持API：</li>
+		<li>window.localstore.save(key, callback)保存</li>
+		<li>window.localstore.read(key, callback)读取</li>
+		<li>window.localstore.del(key, callback)删除</li>
+		<li>window.localstore.clear(storeNumber, callback)清空某一个存储区，或者全部清空</li>
+	</ul>
 	<script>
 		require.config({
             waitSeconds : 2000,
@@ -43,7 +51,7 @@
 	        i++;
         }
         require([ 'localstore/localstore' ], function(localstore) {
-	        window.a = localstore;
+	        window.localstore = localstore;
 	        var a = (+new Date());
 	        t(0);
 	        localstore.enableDebug();

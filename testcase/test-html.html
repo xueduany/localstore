@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html;charset=utf-8">
+</head>
+<body>
+	<style>
+#J_testImgBase64 {
+	width: 1000px;
+	height: 300px;
+}
+</style>
+	<h2>
+		<ol>
+			<li><a id="demoUrl" target="_blank"
+				href="http://statics1.jiaru.club/localstore/testcase/test-html-demo/demo.html">这个一个远程的网页，你可以点击远程访问查看效果</a></li>
+			<li>
+				<button onclick="resetStore()">先清空存储</button>
+			</li>
+			<li>
+				<button onclick="start()">下面我们开始远程请求抓取这个网页，然后把相关资源js,css,图片都保存到本地</button>
+			</li>
+			<li>
+				<button id="z" disabled="disabled" onclick="re()">下面我们从本地还原这个html，给你看看效果，注意查看元素看，html以及大部分跨域能拿到的css和js和图片都是本地document.write生成的哦</button>
+			</li>
+			<li>
+				就意味着，我们可以把整个网站的所有网页都保存在本地，而不用再发起任何请求哟！！！啦啦啦啦啦啦啦~~~~~~
+			</li>
+		</ol>
+	</h2>
+	<script src="../../localstore/src/require.js"></script>
+	<script>
+		require.config({
+            waitSeconds : 2000,
+            baseUrl : 'http://statics1.gtimg.com/localstore/src/'
+        });
+        require([ 'localstore/localstore' ], function(localstore) {
+	        window.resetStore = function() {
+
+		        localstore.clear();
+	        }
+
+	        window.savePic = function() {
+		        localstore.save('testImg', document.querySelector('#J_testImgBase64').value, function() {
+			        alert('save img base64 success!!!');
+		        });
+	        }
+	        window.loadPic = function() {
+
+		        localstore.read('testImg', function(data) {
+			        if (data) {
+				        var img = document.createElement('img');
+				        img.src = data;
+				        document.body.appendChild(img);
+			        } else {
+				        alert('no data!!!')
+			        }
+		        });
+	        }
+
+	        window.start = function() {
+		        var url = document.querySelector('#demoUrl').href;
+		        var count = 0, iteratorDeep = 99, iteratorBegin = 0;
+
+		        getData(url, function(d) {
+			        var htmldata = d;
+
+			        r(d, function(htmlStr) {
+				        localstore.save('html', htmlStr, function() {
+					        alert(htmlStr);
+					        alert('远程页面html已经被保存了相关的js,css,img到localstore,下面开始从localstore里面还原一个完整的页面');
+					        document.querySelector('#z').disabled = false
+
+				        })
+
+			        });
+
+			        function r(htmlStr, then) {
+				        var a = htmlStr.match(/<script[^>]+src="([^>"]+)"[^>]*>(((?!<\/?script).)*[\r\n]*)+<\/script>/mgi) || [];
+				        var b = htmlStr.match(/<link[^>]+href="([^>"]+)"[^>]*>/mgi) || [];
+				        var c = htmlStr.match(/<img[^>]+src="([^>"]+)"[^>]*>/mgi) || [];
+				        if (iteratorBegin == 0) {
+					        count = a.length + b.length + c.length;
+				        }
+				        iteratorBegin++;
+				        function allEndThen() {
+					        if (count == 0) {
+						        then && then(htmlStr);
+					        }
+				        }
+				        if (a && a.length) {
+					        htmlStr = htmlStr.replace(/<script[^>]+src="([^>"]+)"[^>]*>(((?!<\/?script).)*[\r\n]*)+<\/script>/mi, function(scriptBlockStr, scriptUrl) {
+						        var scriptUrl1 = scriptUrl;
+						        if (scriptUrl.indexOf('http://') != 0) {
+							        scriptUrl1 = url.match(/.+\//i)[0] + scriptUrl;
+						        }
+						        getData(scriptUrl1, function(s) {
+							        localstore.save(scriptUrl, s, function() {
+								        count--;
+								        allEndThen();
+							        });
+						        })
+						        return '<LOCALSTORE TYPE="JS" KEY="' + scriptUrl + '"></LOCALSTORE>';
+					        });
+					        return r(htmlStr, then);
+				        } else if (b && b.length) {
+					        htmlStr = htmlStr.replace(/<link[^>]+href="([^>"]+)"[^>]*>/mi, function(cssBlockStr, cssUrl) {
+						        var cssUrl1 = cssUrl;
+						        if (cssUrl1.indexOf('http://') != 0) {
+							        cssUrl1 = url.match(/.+\//i)[0] + cssUrl;
+						        }
+						        getData(cssUrl1, function(s) {
+							        localstore.save(cssUrl, s, function() {
+								        count--;
+								        allEndThen();
+							        });
+						        })
+						        return '<LOCALSTORE TYPE="CSS" KEY="' + cssUrl + '"></LOCALSTORE>';
+					        });
+					        return r(htmlStr, then);
+				        } else if (c && c.length) {
+					        htmlStr = htmlStr.replace(/<img[^>]+src="([^>"]+)"[^>]*>/mi, function(imgBlockStr, imgUrl) {
+						        var imgUrl1 = imgUrl;
+						        if (imgUrl.indexOf('http://') != 0) {
+							        imgUrl1 = url.match(/.+\//i)[0] + imgUrl;
+						        }
+						        getImgBase64(imgUrl1, function(s) {
+							        localstore.save(imgUrl, s, function() {
+								        count--;
+								        allEndThen();
+							        });
+						        })
+						        return '<LOCALSTORE TYPE="IMG" KEY="' + imgUrl + '"></LOCALSTORE>';
+					        });
+					        return r(htmlStr, then);
+				        }
+				        return htmlStr;
+			        }
+		        })
+
+	        }
+
+	        window.re = function() {
+		        localstore.read('html', function(text) {
+			        var count = 0, iteratorDeep = 99, iteratorBegin = 0;
+			        l(text);
+			        function l(htmlStr) {
+				        var a = htmlStr.match(new RegExp('<LOCALSTORE[^>]+TY' + 'PE="([^>"]+)"[^>]*KEY="([^>"]+)"[^>]*>(((?!<\/?LOCALSTORE).)*[\r\n]*)+<\/LOCALSTORE>', 'mi')) || [];
+				        if (iteratorBegin == 0) {
+					        count = a.length;
+				        }
+				        iteratorBegin++;
+				        function allEndThen() {
+					        if (count == 0) {
+						        then && then(htmlStr);
+					        }
+				        }
+				        if (a) {
+					        console.log(a);
+				        }
+				        if (a && a.length) {
+					        var type = a[1];
+					        var key = a[2];
+					        localstore.read(key, function(text) {
+						        var rStr = '<LOCALSTORE TYPE="'+type+'" KEY="'+key+'"></LOCALSTORE>';
+						        htmlStr = htmlStr.substring(0, htmlStr.indexOf(rStr)) + (function() {
+							        if (type == 'JS') {
+								        return '<script>' + text + '<\/script>';
+							        } else if (type == 'CSS') {
+								        return '<style>' + text + '<\/style>';
+							        } else if (type == 'IMG') {
+								        return '<img src="' + text + '">';
+							        } else {
+								        return "";
+							        }
+						        })() + htmlStr.substring((htmlStr.indexOf(rStr) + rStr.length));
+						        if (iteratorDeep < iteratorBegin) {
+							        throw new Exception('over!!!')
+						        }
+						        l(htmlStr);
+					        });
+					        //return '<LOCALSTORE TYPE="JS" KEY="' + scriptUrl + '"></LOCALSTORE>';
+				        } else {
+					        window.zzz = htmlStr;
+					        alert(htmlStr);
+					        var opener = window.open('about:blank');
+					        opener.document.write(htmlStr);
+
+				        }
+			        }
+		        })
+	        }
+	        function getData(url, callback) {
+		        var xhr = new XMLHttpRequest();
+		        var htmldata;
+		        var timeout = setTimeout(function() {
+			        callback('');
+		        }, 3000);
+		        xhr.onreadystatechange = function() {
+			        try {
+				        if (xhr.readyState === 4 && xhr.status === 200) {
+					        clearTimeout(timeout);
+					        callback(xhr.response);
+				        }
+			        } catch (e) {
+				        console.log(e);
+			        }
+		        }
+		        xhr.open("GET", url, true);
+		        xhr.send(null);
+	        }
+	        function getImgBase64(imgUrl, callback) {
+		        var xhr = new XMLHttpRequest();
+		        var imgdata;
+		        var timeout = setTimeout(function() {
+			        callback('');
+		        }, 3000);
+		        xhr.onreadystatechange = function() {
+			        try {
+				        if (xhr.readyState === 4 && xhr.status === 200) {
+					        imgdata = xhr.response;
+					        var reader = new FileReader();
+					        reader.readAsDataURL(imgdata);
+					        reader.onload = function() {
+						        //img.src = this.result;
+						        clearTimeout(timeout);
+						        callback(this.result);
+						        //document.body.appendChild(img);
+					        }
+				        }
+			        } catch (e) {
+				        console.log(e);
+			        }
+		        }
+		        xhr.open("GET", imgUrl, true);
+		        xhr.responseType = 'blob';
+		        //xhr.overrideMimeType("text/plain; charset=x-user-defined");
+		        xhr.send(null);
+	        }
+        });
+	</script>
+</body>
+</html>

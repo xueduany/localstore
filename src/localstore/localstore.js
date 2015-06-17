@@ -266,6 +266,11 @@ define('localstore/localstore', [ 'localstore/connector', 'localstore/config' ],
 	function clear(url, then) {
 		if (readyState) {
 			if (url == null) {
+				var total = localstoreConnectors.length;
+				function allEndThen() {
+					localStorage.setItem('_localstoreConnectors_storeMap_', '{}');
+					url && url();
+				}
 				for (var i = 0; i < localstoreConnectors.length; i++) {
 					var uniqueId = generateUniqueId();
 					var message = {
@@ -273,7 +278,12 @@ define('localstore/localstore', [ 'localstore/connector', 'localstore/config' ],
 					    id : uniqueId
 					};
 					localstoreConnectors.cmdMap[uniqueId] = {
-					    then : then,
+					    then : function() {
+						    total--;
+						    if (total == 0) {
+							    allEndThen();
+						    }
+					    },
 					    message : message
 					};
 					localstoreConnectors[i].connector.postMessage(message, '*');
@@ -281,9 +291,9 @@ define('localstore/localstore', [ 'localstore/connector', 'localstore/config' ],
 			} else if (typeof (url) == 'function') {
 				var total = localstoreConnectors.length;
 				function allEndThen() {
+					localStorage.setItem('_localstoreConnectors_storeMap_', '{}');
 					url && url();
 				}
-				var uniqueId = generateUniqueId();
 				for (var i = 0; i < localstoreConnectors.length; i++) {
 					var uniqueId = generateUniqueId();
 					var message = {
