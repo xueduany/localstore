@@ -19,7 +19,7 @@
 		<textarea id="J_testImgBase64"></textarea>
 	</div>
 	<button onclick="savePic()">然后我们把这个编码存入到localStore里面</button>
-	<button onclick="loadPic()">然后我们从localStore里面读取图片并且绘制在页面上</button>
+	<button id="z" onclick="loadPic()" disabled="disabled">然后我们从localStore里面读取图片并且绘制在页面上</button>
 	<script src="../../localstore/src/require.js"></script>
 	<script>
 		var url = document.querySelector('img').src;
@@ -54,6 +54,7 @@
 	        require([ 'localstore/localstore' ], function(localstore) {
 		        localstore.save('testImg', document.querySelector('#J_testImgBase64').value, function() {
 			        alert('save img base64 success!!!');
+			        document.querySelector('#z').disabled = false;
 		        });
 	        });
         }
