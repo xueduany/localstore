@@ -32,7 +32,9 @@ define('localstore/localstore', [ 'localstore/connector', 'localstore/config' ],
 		localstoreConnectors.currentStore = null;
 		localstoreConnectors.storeMap = {};
 		try {
-			localstoreConnectors.storeMap = JSON.parse(localStorage.getItem('_localstoreConnectors_storeMap_'));
+			if (localStorage.getItem('_localstoreConnectors_storeMap_')) {
+				localstoreConnectors.storeMap = JSON.parse(localStorage.getItem('_localstoreConnectors_storeMap_'));
+			}
 		} catch (e) {
 			error(e);
 		}
